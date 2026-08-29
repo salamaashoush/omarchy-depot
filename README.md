@@ -4,7 +4,7 @@ Every GitHub repo you can reach, in your Omarchy bar. See which checkouts have
 uncommitted work, clone the ones you haven't, and start your coding agent in
 any of them — without leaving the keyboard.
 
-![The Depot panel](docs/screenshot.png)
+![The Depot panel](preview.png)
 
 ## Install
 
