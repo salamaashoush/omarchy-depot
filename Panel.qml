@@ -10,6 +10,11 @@ import "Model.js" as Model
 // Bar icon plus the repo panel. Every color and metric here comes from the
 // Color/Style singletons, so the widget re-themes with `omarchy theme set`
 // without knowing anything about which theme is on.
+//
+// Every Text below pins textFormat. The rows carry GitHub descriptions, commit
+// subjects and gh's stderr — none of it typed by the user — and the AutoText
+// default would promote markup in any of those to rich text and fetch whatever
+// remote resource it names, inside a shell process that runs all session.
 Panel {
   id: root
   moduleName: "sashoush.depot"
@@ -156,6 +161,7 @@ Panel {
       Item {
         Text {
           id: barGlyph
+          textFormat: Text.PlainText
           anchors.centerIn: parent
           text: "󰊤"
           color: root.barForeground
@@ -273,6 +279,7 @@ Panel {
 
           Text {
             id: heroIcon
+            textFormat: Text.PlainText
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             text: "󰊤"
@@ -294,6 +301,7 @@ Panel {
               spacing: Style.space(8)
 
               Text {
+                textFormat: Text.PlainText
                 text: "Depot"
                 color: root.foreground
                 font.family: root.fontFamily
@@ -315,6 +323,7 @@ Panel {
 
                 Text {
                   id: workspaceText
+                  textFormat: Text.PlainText
                   anchors.centerIn: parent
                   text: Model.shortPath(service.workspace, root.homePath)
                   color: root.dim
@@ -325,6 +334,7 @@ Panel {
             }
 
             Text {
+              textFormat: Text.PlainText
               width: parent.width
               text: (service.loading && !service.everLoaded ? "Scanning…" : Model.summary(service.counts)).toUpperCase()
               color: root.dim
@@ -369,6 +379,7 @@ Panel {
             spacing: Style.space(8)
 
             Text {
+              textFormat: Text.PlainText
               text: "󰍉"
               color: root.filterText ? root.accent : root.dim
               font.family: root.fontFamily
@@ -385,6 +396,7 @@ Panel {
 
               Text {
                 id: filterLabel
+                textFormat: Text.PlainText
                 width: Math.min(implicitWidth, filterContent.width - Style.space(34))
                 text: root.filterText || "Search repos…"
                 color: root.filterText ? root.foreground : root.dim
@@ -413,6 +425,7 @@ Panel {
 
           Text {
             id: matchCount
+            textFormat: Text.PlainText
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             visible: root.filterText !== ""
@@ -481,6 +494,7 @@ Panel {
 
           // Nothing matched, or nothing exists yet — say which.
           Text {
+            textFormat: Text.PlainText
             anchors.centerIn: parent
             visible: root.rowModel.length === 0
             width: parent.width - Style.space(24)
@@ -533,6 +547,7 @@ Panel {
 
         Text {
           id: statusLine
+          textFormat: Text.PlainText
           width: parent.width
           leftPadding: Style.space(3)
           visible: text !== ""
@@ -554,6 +569,7 @@ Panel {
 
         Text {
           id: hints
+          textFormat: Text.PlainText
           width: parent.width
           leftPadding: Style.space(3)
           color: root.dim
@@ -610,6 +626,7 @@ Panel {
       spacing: Style.space(9)
 
       Text {
+        textFormat: Text.PlainText
         text: Model.glyph(surface.repo)
         color: surface.live ? root.accent
              : (surface.repo && surface.repo.conflicts ? root.urgent
@@ -630,6 +647,7 @@ Panel {
           spacing: Style.space(6)
 
           Text {
+            textFormat: Text.PlainText
             text: surface.repo ? surface.repo.short : ""
             color: root.foreground
             font.family: root.fontFamily
@@ -641,6 +659,7 @@ Panel {
           // Two repos can share a short name across owners, so the owner
           // stays on the row — dimmed, since it is rarely what you read.
           Text {
+            textFormat: Text.PlainText
             visible: surface.repo && surface.repo.owner !== ""
             text: surface.repo ? surface.repo.owner : ""
             color: root.dim
@@ -652,6 +671,7 @@ Panel {
         }
 
         Text {
+          textFormat: Text.PlainText
           Layout.fillWidth: true
           visible: text !== ""
           text: {
@@ -682,6 +702,7 @@ Panel {
           spacing: Style.space(5)
 
           Text {
+            textFormat: Text.PlainText
             visible: surface.repo && surface.repo.private
             text: "󰌾"
             color: root.dim
@@ -690,6 +711,7 @@ Panel {
           }
 
           Text {
+            textFormat: Text.PlainText
             visible: text !== ""
             text: Model.trailingPrimary(surface.repo)
             color: root.dim
@@ -700,6 +722,7 @@ Panel {
           }
 
           Text {
+            textFormat: Text.PlainText
             visible: text !== ""
             text: Model.statusText(surface.repo)
             color: surface.repo && surface.repo.conflicts ? root.urgent : root.accent
@@ -709,6 +732,7 @@ Panel {
         }
 
         Text {
+          textFormat: Text.PlainText
           Layout.alignment: Qt.AlignRight
           visible: text !== ""
           text: Model.trailingTime(surface.repo)

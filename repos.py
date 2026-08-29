@@ -130,6 +130,20 @@ def parse_status(raw):
     }
 
 
+# A repo description is written by whoever owns the repo and a commit subject
+# by whoever authored it, so neither is the user's own text. Both land in a
+# fixed-height single-line row: fold the whitespace so nothing gains a second
+# line, drop the control and bidi-override characters that would let a string
+# misrepresent what it says, and cap the length so a repo carrying a megabyte
+# of subject line cannot cost the bar a layout pass over all of it.
+UNPRINTABLE = re.compile(
+    r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f\u200e\u200f\u202a-\u202e\u2066-\u2069]")
+
+
+def clean_text(value, limit=200):
+    return " ".join(UNPRINTABLE.sub("", str(value or "")).split())[:limit]
+
+
 def name_with_owner(url):
     """github.com owner/name out of any remote URL shape, or ''."""
     u = (url or "").strip()
@@ -152,7 +166,7 @@ def inspect(path):
 
     lines = last.splitlines()
     commit_ts = int(lines[0]) if lines and lines[0].strip().isdigit() else 0
-    subject = lines[1] if len(lines) > 1 else ""
+    subject = clean_text(lines[1]) if len(lines) > 1 else ""
 
     nwo = name_with_owner(origin)
     short = os.path.basename(path)
@@ -359,7 +373,7 @@ def merge(local, remote, sessions, workspace):
         lang = (item.get("primaryLanguage") or {}).get("name", "")
         pushed = iso_epoch(item.get("pushedAt"))
         meta = {
-            "description": item.get("description") or "",
+            "description": clean_text(item.get("description")),
             "language": lang,
             "private": bool(item.get("isPrivate")),
             "fork": bool(item.get("isFork")),
