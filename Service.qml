@@ -176,11 +176,16 @@ Item {
     actionProcess.running = true
   }
 
-  function startSession(repo) {
+  // `fresh` marks the session chained straight off a clone, where autoApprove
+  // does not apply: the checkout arrived from GitHub seconds ago and nobody has
+  // read a line of it, so handing an agent a permission-bypassing flag inside it
+  // is the one place the setting buys convenience at a price worth refusing.
+  function startSession(repo, fresh) {
     if (!repo || !repo.cloned) return
+    var unattended = autoApprove && !fresh
     var name = resolvedAgent || "the agent"
     runAction([actions, "session", repo.path, repo.short,
-               agentSetting, agentArgs, autoApprove ? "true" : "false"],
+               agentSetting, agentArgs, unattended ? "true" : "false"],
               repo.name, "session", "Starting " + name + " in " + repo.short + "…")
   }
 
@@ -322,7 +327,7 @@ Item {
     onTriggered: {
       var repo = root.repoByName(repoName)
       repoName = ""
-      if (repo && repo.cloned) root.startSession(repo)
+      if (repo && repo.cloned) root.startSession(repo, true)
     }
   }
 }

@@ -107,6 +107,10 @@ That applies the same flag Omarchy's own launcher uses for your agent
 (`--permission-mode auto` for Claude, `--yolo` for Gemini, `--approve-for-me`
 for Codex, and so on). `agentArgs` appends anything else you want.
 
+The session that `⏎` chains onto a clone is the exception. It prompts however
+`autoApprove` is set, because that checkout arrived from GitHub seconds ago and
+nobody has read a line of it. Press `⏎` again once you have.
+
 ## Clone destinations
 
 A repo clones to `<workspaceDir>/<name>`. When more than one repo wants that
@@ -131,7 +135,7 @@ Uncontested names stay flat. Cloning goes through `gh`, so it honors your
 | `repoLimit` | `200` | Repos fetched per owner. An owner that hits the limit is named in the panel's status line rather than silently truncated |
 | `includeForks` | `false` | Forks are hidden by default |
 | `agent` | `auto` | `auto` follows `omarchy default agent`; or pin one of `pi`, `omp`, `opencode`, `claude`, `codex`, `grok`, `gemini`, `copilot`, `crush` |
-| `autoApprove` | `false` | Start the agent without approval prompts, using the same flag Omarchy's own launcher uses for it |
+| `autoApprove` | `false` | Start the agent without approval prompts, using the same flag Omarchy's own launcher uses for it. The session chained onto a fresh clone still prompts |
 | `agentArgs` | `""` | Extra arguments appended to the agent's command line |
 | `cloneProtocol` | `auto` | `auto` follows `gh config git_protocol`; `ssh` or `https` force that transport |
 | `editorCommand` | `""` | Empty uses `omarchy-launch-editor` |
