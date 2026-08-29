@@ -27,6 +27,20 @@ Pick a combination that is free on your machine — `hyprctl binds -j` is the
 authority, and it is worth avoiding keys one slipped modifier away from
 something disruptive.
 
+## Removing
+
+```bash
+omarchy plugin remove sashoush.depot --yes
+omarchy restart shell
+```
+
+That drops the widget from the bar and deletes the plugin directory. Two things
+live outside it and are safe to delete by hand: the cached GitHub listing at
+`~/.local/state/omarchy/depot/remote.json`, and any keybinding you added to
+`~/.config/hypr/bindings.lua`. The plugin never writes anywhere else — it does
+not touch your git config, your repos, or any Omarchy config besides its own
+entry in `shell.json`.
+
 ## Order
 
 Two groups earn the top by being unfinished work: **IN SESSION** (a herdr pane
@@ -124,7 +138,7 @@ actions.sh      clone / session / open, one JSON line per call
 `gh repo list` for every owner. A directory that is itself a checkout is never
 descended into, so vendored submodules don't each become a row.
 
-The GitHub half is cached in `~/.local/state/omarchy/repos/remote.json`. The
+The GitHub half is cached in `~/.local/state/omarchy/depot/remote.json`. The
 panel's periodic scan passes `--stale-ok` and never touches the network, so it
 stays a local pass measured in tens of milliseconds; a cold fetch of several
 hundred repos takes seconds and only happens on the refresh button, `^R`, or

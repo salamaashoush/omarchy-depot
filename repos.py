@@ -21,7 +21,7 @@ import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 
-STATE_DIR = os.path.expanduser("~/.local/state/omarchy/repos")
+STATE_DIR = os.path.expanduser("~/.local/state/omarchy/depot")
 REMOTE_CACHE = os.path.join(STATE_DIR, "remote.json")
 HERDR_SOCK = os.path.expanduser("~/.config/herdr/herdr.sock")
 
