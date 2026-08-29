@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "id": "sashoush.repos",
+  "name": "Repos",
+  "version": "1.0.0",
+  "author": "Salama Ashoush",
+  "license": "MIT",
+  "description": "GitHub repos in the bar: which ones have uncommitted work, one key to clone them into the workspace, one key to open a Claude session on any of them.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Repos",
+    "description": "Search every GitHub repo you can reach, see which local checkouts are dirty, clone the ones you haven't, and start a Claude session in any of them.",
+    "category": "Development",
+    "aliases": [
+      "repos",
+      "github"
+    ],
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "workspaceDir": "~/Workspace",
+      "owners": [],
+      "refreshIntervalSec": 90,
+      "remoteTtlSec": 1800,
+      "repoLimit": 200,
+      "includeForks": false,
+      "claudeArgs": "",
+      "cloneProtocol": "ssh",
+      "editorCommand": "",
+      "scanDepth": 2
+    },
+    "schema": [
+      {
+        "key": "workspaceDir",
+        "type": "path",
+        "label": "Workspace folder",
+        "defaultValue": "~/Workspace",
+        "description": "Where clones land and where local checkouts are scanned."
+      },
+      {
+        "key": "scanDepth",
+        "type": "integer",
+        "label": "Scan depth below the workspace folder",
+        "min": 1,
+        "max": 4,
+        "step": 1,
+        "defaultValue": 2,
+        "description": "2 finds both ~/Workspace/repo and ~/Workspace/owner/repo."
+      },
+      {
+        "key": "refreshIntervalSec",
+        "type": "integer",
+        "label": "Local rescan interval (seconds)",
+        "min": 15,
+        "max": 3600,
+        "step": 15,
+        "defaultValue": 90
+      },
+      {
+        "key": "remoteTtlSec",
+        "type": "integer",
+        "label": "GitHub cache lifetime (seconds)",
+        "min": 60,
+        "max": 86400,
+        "step": 60,
+        "defaultValue": 1800
+      },
+      {
+        "key": "repoLimit",
+        "type": "integer",
+        "label": "Repos fetched per owner",
+        "min": 10,
+        "max": 1000,
+        "step": 10,
+        "defaultValue": 200
+      },
+      {
+        "key": "includeForks",
+        "type": "boolean",
+        "label": "Include forks",
+        "defaultValue": false
+      },
+      {
+        "key": "claudeArgs",
+        "type": "string",
+        "label": "Claude arguments",
+        "defaultValue": "",
+        "description": "Extra arguments passed to claude when a session starts. Set to --dangerously-skip-permissions for a yolo session."
+      },
+      {
+        "key": "cloneProtocol",
+        "type": "enum",
+        "label": "Clone protocol",
+        "options": [
+          "ssh",
+          "https"
+        ],
+        "defaultValue": "ssh"
+      },
+      {
+        "key": "editorCommand",
+        "type": "string",
+        "label": "Editor command",
+        "defaultValue": "",
+        "description": "Empty uses omarchy-launch-editor."
+      }
+    ]
+  },
+  "homepage": "https://github.com/salamaashoush/omarchy-repos"
+}
