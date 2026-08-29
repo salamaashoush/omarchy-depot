@@ -32,6 +32,7 @@ Item {
   property bool panelOpen: false
   property bool remoteStale: false
   property bool herdrRunning: false
+  property string defaultAgent: ""
   property string workspace: ""
 
   // Set while a clone runs so the row can show progress and the panel can
@@ -59,8 +60,24 @@ Item {
   readonly property int remoteTtlSec: intSetting("remoteTtlSec", 1800, 60, 86400)
   readonly property int repoLimit: intSetting("repoLimit", 200, 10, 1000)
   readonly property bool includeForks: String(setting("includeForks", false)) === "true" || setting("includeForks", false) === true
-  readonly property string claudeArgs: String(setting("claudeArgs", "--dangerously-skip-permissions"))
+  readonly property string agentSetting: String(setting("agent", "auto"))
+  readonly property string agentArgs: String(setting("agentArgs", setting("claudeArgs", "")))
+  readonly property bool autoApprove: String(setting("autoApprove", false)) === "true" || setting("autoApprove", false) === true
+
+  // What the panel calls the agent in its hints. "auto" defers to
+  // `omarchy default agent`, which the scanner reports back to us.
+  readonly property string resolvedAgent: agentSetting !== "auto" ? agentSetting : defaultAgent
   readonly property string editorCommand: String(setting("editorCommand", ""))
+  readonly property string cloneProtocol: String(setting("cloneProtocol", "auto"))
+
+  // "auto" hands gh the owner/name and lets `gh config git_protocol` decide;
+  // ssh and https hand it an explicit URL instead. gh authenticates either
+  // way, so private repos work without an ssh key when https is chosen.
+  function cloneTarget(repo) {
+    if (cloneProtocol === "ssh" && repo.sshUrl) return repo.sshUrl
+    if (cloneProtocol === "https" && repo.httpsUrl) return repo.httpsUrl
+    return ""
+  }
 
   function expand(path) {
     var p = String(path || "")
@@ -130,6 +147,7 @@ Item {
     remoteTruncated = data.remoteTruncated || []
     workspaceExists = data.workspaceExists !== false
     herdrRunning = data.herdrRunning === true
+    defaultAgent = String(data.defaultAgent || "")
     workspace = String(data.workspace || workspaceDir)
     lastError = ""
     everLoaded = true
@@ -158,14 +176,16 @@ Item {
 
   function startSession(repo) {
     if (!repo || !repo.cloned) return
-    runAction([actions, "session", repo.path, repo.short, claudeArgs],
-              repo.name, "session", "Starting Claude in " + repo.short + "…")
+    var name = resolvedAgent || "the agent"
+    runAction([actions, "session", repo.path, repo.short,
+               agentSetting, agentArgs, autoApprove ? "true" : "false"],
+              repo.name, "session", "Starting " + name + " in " + repo.short + "…")
   }
 
   function clone(repo, thenSession) {
     if (!repo || repo.cloned) return
     sessionAfterClone = thenSession ? repo.name : ""
-    runAction([actions, "clone", repo.sshUrl || repo.httpsUrl || "", repo.path, repo.nameWithOwner || ""],
+    runAction([actions, "clone", cloneTarget(repo), repo.path, repo.nameWithOwner || ""],
               repo.name, "clone", "Cloning " + repo.short + "…")
   }
 

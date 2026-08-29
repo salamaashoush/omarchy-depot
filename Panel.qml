@@ -564,8 +564,9 @@ Panel {
           text: {
             var repo = root.selectedRepo
             if (!repo) return "type to search · ↑↓ move · ⏎ open"
-            if (!repo.cloned) return "⏎ clone + Claude · ^D clone · ^O web"
-            return "⏎ Claude · ^E nvim · ^T term · ^G git · ^O web · ^R sync"
+            var agent = service.resolvedAgent || "agent"
+            if (!repo.cloned) return "⏎ clone + " + agent + " · ^D clone · ^O web"
+            return "⏎ " + agent + " · ^E edit · ^T term · ^G git · ^O web · ^R sync"
           }
         }
       }
@@ -655,7 +656,9 @@ Panel {
           visible: text !== ""
           text: {
             if (!surface.repo) return ""
-            if (surface.busy) return service.busyVerb === "clone" ? "Cloning…" : "Starting Claude…"
+            if (surface.busy) return service.busyVerb === "clone"
+                                     ? "Cloning…"
+                                     : "Starting " + (service.resolvedAgent || "agent") + "…"
             var session = Model.sessionLabel(surface.repo)
             return session ? session : Model.detailLine(surface.repo)
           }

@@ -24,6 +24,7 @@ from concurrent.futures import ThreadPoolExecutor
 STATE_DIR = os.path.expanduser("~/.local/state/omarchy/depot")
 REMOTE_CACHE = os.path.join(STATE_DIR, "remote.json")
 HERDR_SOCK = os.path.expanduser("~/.config/herdr/herdr.sock")
+AGENT_DEFAULT = os.path.expanduser("~/.config/omarchy/defaults/agent")
 
 # Groups, in the order the panel stacks them. The first two are work already
 # in flight — a live agent, or edits you have not committed — and they earn
@@ -54,6 +55,15 @@ def run(cmd, cwd=None, timeout=15):
 
 
 # --------------------------------------------------------------- local repos
+
+def default_agent():
+    """Whatever `omarchy default agent` last wrote, or "" when unset."""
+    try:
+        with open(AGENT_DEFAULT) as fh:
+            return fh.read().strip()
+    except OSError:
+        return ""
+
 
 def find_checkouts(workspace, depth):
     """Git checkouts under the workspace folder, at most `depth` levels down.
@@ -476,6 +486,7 @@ def main():
         "remoteOwners": remote.get("owners", owners),
         "remoteTruncated": remote.get("truncated", []),
         "herdrRunning": herdr_up,
+        "defaultAgent": default_agent(),
         "counts": counts,
         "repos": repos,
     }, sys.stdout)

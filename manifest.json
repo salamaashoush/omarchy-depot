@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "author": "Salama Ashoush",
   "license": "MIT",
-  "description": "A depot for your GitHub repos in the Omarchy bar: which checkouts have uncommitted work, one key to clone, one key to start a Claude session.",
+  "description": "A depot for your GitHub repos in the Omarchy bar: which checkouts have uncommitted work, one key to clone, one key to start your coding agent.",
   "kinds": [
     "bar-widget"
   ],
@@ -30,10 +30,12 @@
       "remoteTtlSec": 1800,
       "repoLimit": 200,
       "includeForks": false,
-      "claudeArgs": "",
-      "cloneProtocol": "ssh",
+      "cloneProtocol": "auto",
       "editorCommand": "",
-      "scanDepth": 2
+      "scanDepth": 2,
+      "agent": "auto",
+      "agentArgs": "",
+      "autoApprove": false
     },
     "schema": [
       {
@@ -87,21 +89,16 @@
         "defaultValue": false
       },
       {
-        "key": "claudeArgs",
-        "type": "string",
-        "label": "Claude arguments",
-        "defaultValue": "",
-        "description": "Extra arguments passed to claude when a session starts. Set to --dangerously-skip-permissions for a yolo session."
-      },
-      {
         "key": "cloneProtocol",
         "type": "enum",
         "label": "Clone protocol",
         "options": [
+          "auto",
           "ssh",
           "https"
         ],
-        "defaultValue": "ssh"
+        "defaultValue": "auto",
+        "description": "auto follows `gh config git_protocol`; ssh and https force that transport regardless."
       },
       {
         "key": "editorCommand",
@@ -109,6 +106,39 @@
         "label": "Editor command",
         "defaultValue": "",
         "description": "Empty uses omarchy-launch-editor."
+      },
+      {
+        "key": "agent",
+        "type": "enum",
+        "label": "Coding agent",
+        "options": [
+          "auto",
+          "pi",
+          "omp",
+          "opencode",
+          "claude",
+          "codex",
+          "grok",
+          "gemini",
+          "copilot",
+          "crush"
+        ],
+        "defaultValue": "auto",
+        "description": "auto follows `omarchy default agent`."
+      },
+      {
+        "key": "autoApprove",
+        "type": "boolean",
+        "label": "Start the agent without approval prompts",
+        "defaultValue": false,
+        "description": "Applies the same flag Omarchy's own agent launcher uses for the chosen agent."
+      },
+      {
+        "key": "agentArgs",
+        "type": "string",
+        "label": "Extra agent arguments",
+        "defaultValue": "",
+        "description": "Appended to the agent's command line."
       }
     ]
   },

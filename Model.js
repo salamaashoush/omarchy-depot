@@ -113,42 +113,6 @@ function statusText(repo) {
   return parts.join(" ")
 }
 
-// Hover detail for the status cluster — the breakdown the one-number summary
-// deliberately hides.
-function statusDetail(repo) {
-  if (!repo || !repo.cloned) return ""
-  var parts = []
-  if (repo.staged) parts.push(repo.staged + " staged")
-  if (repo.unstaged) parts.push(repo.unstaged + " modified")
-  if (repo.untracked) parts.push(repo.untracked + " untracked")
-  if (repo.conflicts) parts.push(repo.conflicts + " conflicted")
-  if (repo.ahead) parts.push(repo.ahead + " to push")
-  if (repo.behind) parts.push(repo.behind + " to pull")
-  return parts.length ? parts.join(", ") : "clean"
-}
-
-// The second line under the repo name. Cloned repos talk about the checkout;
-// uncloned ones talk about GitHub.
-function subtitle(repo) {
-  if (!repo) return ""
-  if (!repo.cloned) {
-    var bits = []
-    if (repo.language) bits.push(repo.language)
-    if (repo.stars) bits.push("★" + repo.stars)
-    if (repo.private) bits.push("private")
-    var pushed = relativeTime(repo.pushedAt)
-    if (pushed) bits.push("pushed " + pushed)
-    return bits.join(" · ")
-  }
-  var line = []
-  if (repo.branch) line.push(repo.branch)
-  var status = statusText(repo)
-  if (status) line.push(status)
-  var touched = relativeTime(repo.lastCommit)
-  if (touched) line.push(touched)
-  return line.join("  ")
-}
-
 function sessionLabel(repo) {
   if (!repo || !repo.session) return ""
   var agent = repo.session.agent || "shell"

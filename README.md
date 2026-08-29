@@ -1,8 +1,8 @@
 # Depot — an Omarchy shell plugin
 
 Every GitHub repo you can reach, in your Omarchy bar. See which checkouts have
-uncommitted work, clone the ones you haven't, and start a Claude Code session
-in any of them — without leaving the keyboard.
+uncommitted work, clone the ones you haven't, and start your coding agent in
+any of them — without leaving the keyboard.
 
 ![The Depot panel](docs/screenshot.png)
 
@@ -13,9 +13,11 @@ omarchy plugin add https://github.com/salamaashoush/omarchy-depot.git --enable -
 omarchy restart shell
 ```
 
-Requires [`gh`](https://cli.github.com/) signed in (`gh auth login`).
-[`herdr`](https://herdr.dev) is needed only for Claude sessions, and ships with
-Omarchy. Optional: `lazygit` for the git action.
+Requires [`gh`](https://cli.github.com/) signed in (`gh auth login`), plus
+`python3` and `jq`, which Omarchy already ships. [`herdr`](https://herdr.dev)
+is needed only for agent sessions and also ships with Omarchy; set an agent
+with `omarchy default agent <name>` if you haven't. Optional: `lazygit` for the
+git action.
 
 To summon it from the keyboard, add a binding to `~/.config/hypr/bindings.lua`:
 
@@ -60,7 +62,7 @@ above matches in the description; `clts` finds `clap-ts` by subsequence.
 
 | Key | Action |
 |---|---|
-| `⏎` | Cloned → Claude session. Not cloned → clone, then session |
+| `⏎` | Cloned → agent session. Not cloned → clone, then session |
 | `^D` | Clone only |
 | `^E` | Editor (`omarchy-launch-editor`, so whatever `omarchy` is set to) |
 | `^T` | Terminal in the checkout |
@@ -78,8 +80,15 @@ never changes height under the pointer.
 ## Sessions
 
 `⏎` on a checkout starts herdr if it isn't up, waits for its socket, creates a
-workspace with `--cwd` at the repo, and runs `herdr agent start --kind claude`
-in that workspace's root pane with whatever `claudeArgs` says.
+workspace with `--cwd` at the repo, and starts your coding agent in that
+workspace's root pane.
+
+Which agent? By default whatever `omarchy default agent` is set to — the same
+setting the rest of Omarchy reads — so there is nothing to configure if you
+already picked one. Pin a different one just for this panel with the `agent`
+setting. herdr can detect and drive `pi`, `claude`, `codex`, `gemini`, `grok`,
+`omp`, `opencode` and `copilot`; anything else (`crush`) still launches, it just
+runs as a plain command in the pane without herdr's agent status.
 
 Every repo becomes **another workspace inside the one running herdr session**,
 never a second herdr instance — so herdr's workspace bindings walk between the
@@ -88,12 +97,15 @@ rather than stacking a second agent on the same checkout, and that lookup
 matches on the pane's **working directory**, not its label: labels are repo
 short names, and two owners can share one.
 
-`claudeArgs` is empty by default, so sessions prompt for permissions as usual.
-For a yolo session:
+Sessions prompt for approval as usual. To start them unattended:
 
 ```bash
-omarchy bar set sashoush.depot claudeArgs '--dangerously-skip-permissions'
+omarchy bar set sashoush.depot autoApprove true --json
 ```
+
+That applies the same flag Omarchy's own launcher uses for your agent
+(`--permission-mode auto` for Claude, `--yolo` for Gemini, `--approve-for-me`
+for Codex, and so on). `agentArgs` appends anything else you want.
 
 ## Clone destinations
 
@@ -118,8 +130,10 @@ Uncontested names stay flat. Cloning goes through `gh`, so it honors your
 | `remoteTtlSec` | `1800` | How stale the cached GitHub listing may get |
 | `repoLimit` | `200` | Repos fetched per owner. An owner that hits the limit is named in the panel's status line rather than silently truncated |
 | `includeForks` | `false` | Forks are hidden by default |
-| `claudeArgs` | `""` | Passed to `claude` when a session starts |
-| `cloneProtocol` | `ssh` | Cloning goes through `gh`, which honors `gh config git_protocol` |
+| `agent` | `auto` | `auto` follows `omarchy default agent`; or pin one of `pi`, `omp`, `opencode`, `claude`, `codex`, `grok`, `gemini`, `copilot`, `crush` |
+| `autoApprove` | `false` | Start the agent without approval prompts, using the same flag Omarchy's own launcher uses for it |
+| `agentArgs` | `""` | Extra arguments appended to the agent's command line |
+| `cloneProtocol` | `auto` | `auto` follows `gh config git_protocol`; `ssh` or `https` force that transport |
 | `editorCommand` | `""` | Empty uses `omarchy-launch-editor` |
 
 ## How it works

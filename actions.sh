@@ -37,9 +37,13 @@ cmd_clone() {
   # the same way the rest of the panel does, so private repos and hosts
   # without an ssh key still work. Plain git is the fallback for a checkout
   # that isn't a GitHub repo.
+  # gh takes either a full URL or owner/name, and authenticates for both. A URL
+  # is only passed when cloneProtocol forces a transport; otherwise the
+  # shorthand lets `gh config git_protocol` decide.
+  local target="${url:-$nwo}"
   local out
-  if [[ -n $nwo ]]; then
-    out=$(gh repo clone "$nwo" "$dest" -- --recurse-submodules 2>&1)
+  if [[ -n $nwo || -n $url ]]; then
+    out=$(gh repo clone "$target" "$dest" -- --recurse-submodules 2>&1)
   else
     out=$(git clone --recurse-submodules "$url" "$dest" 2>&1)
   fi
@@ -62,6 +66,48 @@ clone_error() {
   [[ -z $line ]] && line=$(grep -m1 -E "^(fatal|error|ERROR):" <<<"$text")
   [[ -z $line ]] && line=$(printf '%s' "$text" | tail -n1)
   printf '%s' "${line#*: }"
+}
+
+# ------------------------------------------------------------------- agents
+
+# Which agent to launch. "auto" (the default) follows `omarchy default agent`,
+# the same setting the rest of Omarchy reads.
+resolve_agent() {
+  local want="${1:-auto}"
+  if [[ $want == "auto" || -z $want ]]; then
+    omarchy-default-agent 2>/dev/null
+  else
+    printf '%s' "$want"
+  fi
+}
+
+# Every agent spells "don't stop to ask" differently. This mirrors the table in
+# omarchy-agent so a session started here behaves like one started from
+# Omarchy's own launcher; it is only consulted when autoApprove is on.
+auto_approve_args() {
+  case "$1" in
+    opencode) printf '%s' "--auto" ;;
+    gemini)   printf '%s' "--yolo" ;;
+    copilot)  printf '%s' "--allow-all" ;;
+    crush)    printf '%s' "--yolo" ;;
+    claude)   printf '%s' "--permission-mode auto" ;;
+    grok)     printf '%s' "--permission-mode bypassPermissions" ;;
+    codex)    printf '%s' "--approve-for-me" ;;
+    omp)      printf '%s' "--auto-approve" ;;
+    pi)       printf '%s' "" ;;          # pi has no approval prompts
+    *)        printf '%s' "" ;;
+  esac
+}
+
+# herdr can detect and drive these; anything else still runs, just as a plain
+# command in the pane without herdr's agent status.
+herdr_knows_agent() {
+  case "$1" in
+    pi | claude | codex | gemini | cursor | devin | agy | cline | omp | mastracode \
+      | opencode | copilot | kimi | kiro | droid | amp | grok | hermes | kilo \
+      | qodercli | qwen | maki) return 0 ;;
+    *) return 1 ;;
+  esac
 }
 
 # ------------------------------------------------------------ herdr sessions
@@ -97,14 +143,19 @@ herdr_json() { # herdr_json <args...> — unwraps the CLI envelope, fails on err
 }
 
 cmd_session() {
-  local path="${1:-}" label="${2:-}" agent_args="${3:-}"
+  local path="${1:-}" label="${2:-}" agent_setting="${3:-auto}" agent_args="${4:-}" auto_approve="${5:-false}"
   [[ -d $path ]] || die "$path is not a directory"
   [[ -n $label ]] || label=$(basename "$path")
+
+  local agent
+  agent=$(resolve_agent "$agent_setting")
+  [[ -n $agent ]] || die "No coding agent set — run: omarchy default agent <name>"
+  command -v "$agent" >/dev/null 2>&1 || die "$agent is not installed"
 
   ensure_herdr || die "herdr did not start"
 
   # Already have a workspace on this checkout? Focus it instead of stacking a
-  # second Claude on the same directory.
+  # second agent on the same directory.
   #
   # Matched by working directory, not by label: the label is the repo's short
   # name, and two owners can share one (Bltzo/mandarin-app and
@@ -130,16 +181,34 @@ cmd_session() {
   omarchy-launch-or-focus-tui herdr >/dev/null 2>&1 &
 
   local -a args=()
-  [[ -n $agent_args ]] && read -r -a args <<<"$agent_args"
+  if [[ $auto_approve == "true" ]]; then
+    local approve
+    approve=$(auto_approve_args "$agent")
+    [[ -n $approve ]] && read -r -a args <<<"$approve"
+  fi
+  if [[ -n $agent_args ]]; then
+    local -a extra=()
+    read -r -a extra <<<"$agent_args"
+    args+=("${extra[@]}")
+  fi
 
   local started
-  if ! started=$(herdr_json agent start "$label" --kind claude --pane "$pane" -- "${args[@]}"); then
-    # The workspace is there and sitting at a shell prompt, which is still a
-    # useful place to land — say so rather than pretending nothing happened.
-    reply error "Workspace opened, but Claude did not start: $started"
-    return 0
+  if herdr_knows_agent "$agent"; then
+    if ! started=$(herdr_json agent start "$label" --kind "$agent" --pane "$pane" -- "${args[@]}"); then
+      # The workspace is there and sitting at a shell prompt, which is still a
+      # useful place to land — say so rather than pretending nothing happened.
+      reply error "Workspace opened, but $agent did not start: $started"
+      return 0
+    fi
+  else
+    # herdr has no detector for this agent, so run it as a plain command. The
+    # session works; only herdr's status reporting is missing.
+    if ! started=$(herdr_json pane run "$pane" "$agent" "${args[@]}"); then
+      reply error "Workspace opened, but $agent did not start: $started"
+      return 0
+    fi
   fi
-  reply ok "Claude running in $label"
+  reply ok "$agent running in $label"
 }
 
 # ------------------------------------------------------------- plain openers
