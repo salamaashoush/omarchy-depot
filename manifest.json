@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "sashoush.depot",
   "name": "Depot",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Salama Ashoush",
   "license": "MIT",
   "description": "A depot for your GitHub repos in the Omarchy bar: which checkouts have uncommitted work, one key to clone, one key to start your coding agent.",
@@ -14,7 +14,7 @@
   },
   "barWidget": {
     "displayName": "Depot",
-    "description": "Search every GitHub repo you can reach, see which local checkouts are dirty, clone the ones you haven't, and start a Claude session in any of them.",
+    "description": "Search every GitHub repo you can reach, see which local checkouts are dirty, clone the ones you haven't, and start a coding agent session in any of them.",
     "category": "Development",
     "aliases": [
       "depot",
@@ -131,7 +131,7 @@
         "type": "boolean",
         "label": "Start the agent without approval prompts",
         "defaultValue": false,
-        "description": "Applies the same flag Omarchy's own agent launcher uses for the chosen agent."
+        "description": "Applies the same flag Omarchy's own agent launcher uses for the chosen agent. The session chained onto a fresh clone still prompts."
       },
       {
         "key": "agentArgs",

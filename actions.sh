@@ -4,7 +4,7 @@
 # The panel never shells out to git or herdr directly — it calls one
 # subcommand here and reads a single JSON line off stdout. Keeping the
 # sequencing (start herdr if it isn't up, wait for the socket, create the
-# workspace, attach Claude to its pane) in bash keeps the QML side free of
+# workspace, attach the agent to its pane) in bash keeps the QML side free of
 # multi-step process choreography.
 #
 # Usage: actions.sh <clone|session|terminal|editor|lazygit|browse> [args...]
