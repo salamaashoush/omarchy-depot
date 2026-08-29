@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "sashoush.depot",
   "name": "Depot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Salama Ashoush",
   "license": "MIT",
   "description": "A depot for your GitHub repos in the Omarchy bar: which checkouts have uncommitted work, one key to clone, one key to start your coding agent.",

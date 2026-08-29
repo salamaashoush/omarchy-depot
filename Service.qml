@@ -61,6 +61,8 @@ Item {
   readonly property int repoLimit: intSetting("repoLimit", 200, 10, 1000)
   readonly property bool includeForks: String(setting("includeForks", false)) === "true" || setting("includeForks", false) === true
   readonly property string agentSetting: String(setting("agent", "auto"))
+  // claudeArgs is the pre-1.1 name for this key, read as a fallback so an
+  // existing config keeps working across the rename.
   readonly property string agentArgs: String(setting("agentArgs", setting("claudeArgs", "")))
   readonly property bool autoApprove: String(setting("autoApprove", false)) === "true" || setting("autoApprove", false) === true
 
