@@ -1,15 +1,15 @@
-# Repos — an Omarchy shell plugin
+# Depot — an Omarchy shell plugin
 
 Every GitHub repo you can reach, in your Omarchy bar. See which checkouts have
 uncommitted work, clone the ones you haven't, and start a Claude Code session
 in any of them — without leaving the keyboard.
 
-![The Repos panel](docs/screenshot.png)
+![The Depot panel](docs/screenshot.png)
 
 ## Install
 
 ```bash
-omarchy plugin add https://github.com/salamaashoush/omarchy-repos.git --enable --yes
+omarchy plugin add https://github.com/salamaashoush/omarchy-depot.git --enable --yes
 omarchy restart shell
 ```
 
@@ -20,7 +20,7 @@ Omarchy. Optional: `lazygit` for the git action.
 To summon it from the keyboard, add a binding to `~/.config/hypr/bindings.lua`:
 
 ```lua
-o.bind("SUPER + SHIFT + R", "Repos", "omarchy-shell sashoush.repos toggle")
+o.bind("SUPER + SHIFT + R", "Repos", "omarchy-shell sashoush.depot toggle")
 ```
 
 Pick a combination that is free on your machine — `hyprctl binds -j` is the
@@ -78,7 +78,7 @@ short names, and two owners can share one.
 For a yolo session:
 
 ```bash
-omarchy bar set sashoush.repos claudeArgs '--dangerously-skip-permissions'
+omarchy bar set sashoush.depot claudeArgs '--dangerously-skip-permissions'
 ```
 
 ## Clone destinations
@@ -92,7 +92,7 @@ Uncontested names stay flat. Cloning goes through `gh`, so it honors your
 
 ## Settings
 
-`omarchy bar set sashoush.repos <key> <value>` (numbers and booleans need
+`omarchy bar set sashoush.depot <key> <value>` (numbers and booleans need
 `--json`):
 
 | Key | Default | Meaning |

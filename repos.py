@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Repo inventory for the sashoush.repos Omarchy shell plugin.
+"""Repo inventory for the sashoush.depot Omarchy shell plugin.
 
 Prints one JSON document on stdout describing every repo the panel can show:
 local checkouts under the workspace folder, each with live git status, merged

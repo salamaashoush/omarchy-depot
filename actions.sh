@@ -1,5 +1,5 @@
 #!/bin/bash
-# Side-effecting actions for the sashoush.repos shell plugin.
+# Side-effecting actions for the sashoush.depot shell plugin.
 #
 # The panel never shells out to git or herdr directly — it calls one
 # subcommand here and reads a single JSON line off stdout. Keeping the

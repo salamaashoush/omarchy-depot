@@ -12,8 +12,8 @@ import "Model.js" as Model
 // without knowing anything about which theme is on.
 Panel {
   id: root
-  moduleName: "sashoush.repos"
-  ipcTarget: "sashoush.repos"
+  moduleName: "sashoush.depot"
+  ipcTarget: "sashoush.depot"
   manageIpc: false
 
   // A user plugin can't lean on $OMARCHY_PATH the way a first-party one does,
@@ -294,7 +294,7 @@ Panel {
               spacing: Style.space(8)
 
               Text {
-                text: "Repos"
+                text: "Depot"
                 color: root.foreground
                 font.family: root.fontFamily
                 font.pixelSize: Style.font.title

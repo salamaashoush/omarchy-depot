@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "id": "sashoush.repos",
-  "name": "Repos",
+  "id": "sashoush.depot",
+  "name": "Depot",
   "version": "1.0.0",
   "author": "Salama Ashoush",
   "license": "MIT",
-  "description": "GitHub repos in the bar: which ones have uncommitted work, one key to clone them into the workspace, one key to open a Claude session on any of them.",
+  "description": "A depot for your GitHub repos in the Omarchy bar: which checkouts have uncommitted work, one key to clone, one key to start a Claude session.",
   "kinds": [
     "bar-widget"
   ],
@@ -13,10 +13,11 @@
     "barWidget": "Panel.qml"
   },
   "barWidget": {
-    "displayName": "Repos",
+    "displayName": "Depot",
     "description": "Search every GitHub repo you can reach, see which local checkouts are dirty, clone the ones you haven't, and start a Claude session in any of them.",
     "category": "Development",
     "aliases": [
+      "depot",
       "repos",
       "github"
     ],
@@ -111,5 +112,5 @@
       }
     ]
   },
-  "homepage": "https://github.com/salamaashoush/omarchy-repos"
+  "homepage": "https://github.com/salamaashoush/omarchy-depot"
 }
